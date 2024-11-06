@@ -18,7 +18,6 @@ class PostController extends Controller
         $post = new Post();
         $post->title = $validated['title'];
         $post->content = $validated['content'];
-        $post->user_id = Auth::id();
         $post->category_id = $validated['category_id'];
         $post->save();
 
@@ -38,6 +37,25 @@ class PostController extends Controller
             ];
         });
 
+        return response()->json($posts);
+    }
+
+    public function listAllPosts()
+    {
+        // Obtén todos los posts con la categoría asociada
+        $posts = Post::with('category')->get();
+
+        // Mapea los posts para incluir el nombre de la categoría
+        $posts = $posts->map(function ($post) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'category_name' => $post->category ? $post->category->name : null,
+            ];
+        });
+
+        // Devuelve los posts como JSON
         return response()->json($posts);
     }
 }

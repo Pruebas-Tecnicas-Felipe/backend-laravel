@@ -16,4 +16,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/categories', [CategoryController::class, 'create']);
     Route::get('/allCategories', [CategoryController::class, 'index']);
     Route::get('/posts/{categoryId}', [PostController::class, 'listByCategory']);
+    Route::get('/allPosts/', [PostController::class, 'listAllPosts']);
 });
