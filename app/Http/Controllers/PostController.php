@@ -8,17 +8,18 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    public function create(Request $request)
-    {
+    public function create(Request $request){
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'category_id' => 'required|integer',
         ]);
 
         $post = new Post();
         $post->title = $validated['title'];
         $post->content = $validated['content'];
         $post->user_id = Auth::id();
+        $post->category_id = $validated['category_id'];
         $post->save();
 
         return response()->json(['message' => 'Post created successfully']);
@@ -26,7 +27,17 @@ class PostController extends Controller
 
     public function listByCategory($categoryId)
     {
-        $posts = Post::where('category_id', $categoryId)->get();
+        $posts = Post::with('category')->where('category_id', $categoryId)->get();
+
+        $posts = $posts->map(function ($post) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'category_name' => $post->category ? $post->category->name : null,
+            ];
+        });
+
         return response()->json($posts);
     }
 }

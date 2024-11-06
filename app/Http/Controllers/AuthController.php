@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    // Método de registro
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -26,15 +27,14 @@ class AuthController extends Controller
         return response()->json(['message' => 'User registered successfully']);
     }
 
+    // Método de login utilizando Sanctum
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            $token = bin2hex(random_bytes(40)); // Token simple
             $user = Auth::user();
-            $user->remember_token = $token;
-            $user->save();
+            $token = $user->createToken('YourAppName')->plainTextToken; // Usando Sanctum para crear un token
 
             return response()->json(['token' => $token]);
         }
