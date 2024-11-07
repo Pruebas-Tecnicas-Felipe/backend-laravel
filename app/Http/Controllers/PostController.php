@@ -58,4 +58,11 @@ class PostController extends Controller
         // Devuelve los posts como JSON
         return response()->json($posts);
     }
+
+    public function countPosts()
+    {
+        $count = Post::count();
+
+        return response()->json(['post_count' => $count]);
+    }
 }
